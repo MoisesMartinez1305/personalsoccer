@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Jugador{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="main-card card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title text-center mb-0">➕ Agregar Jugador</h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form action="{{ url_for('create_jugador') }}" method="POST">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="Dorsal" class="form-label fw-bold text-primary">Dorsal*</label>
+                                    <input type="text" class="form-control border-primary" id="Dorsal" 
+                                           name="Dorsal" required pattern="[0-9]+" title="Solo números permitidos">
+                                    <small class="text-muted">Número de dorsal (solo dígitos)</small>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="Nombre" class="form-label fw-bold text-primary">Nombre*</label>
+                                    <input type="text" class="form-control border-primary" id="Nombre" 
+                                           name="Nombre" required pattern="[A-Za-zÁ-Úá-ú\s]+" title="Solo letras permitidas">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="Edad_en_años" class="form-label fw-bold text-primary">Edad (años)*</label>
+                                    <input type="number" class="form-control border-primary" id="Edad_en_años" 
+                                           name="Edad_en_años" min="16" max="45" required>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="Equipo" class="form-label fw-bold text-primary">Equipo*</label>
+                                    <select class="form-select border-primary" id="Equipo" name="Equipo" required>
+                                        <option value="" disabled selected>Seleccione un equipo</option>
+                                        {% for equipo in equipos %}
+                                            <option value="{{ equipo }}">{{ equipo }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="Ap_paterno" class="form-label fw-bold text-primary">Apellido Paterno*</label>
+                                    <input type="text" class="form-control border-primary" id="Ap_paterno" 
+                                           name="Ap_paterno" required pattern="[A-Za-zÁ-Úá-ú\s]+" title="Solo letras permitidas">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="Ap_materno" class="form-label fw-bold text-primary">Apellido Materno</label>
+                                    <input type="text" class="form-control border-primary" id="Ap_materno" 
+                                           name="Ap_materno" pattern="[A-Za-zÁ-Úá-ú\s]*" title="Solo letras permitidas">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="fas fa-save me-2"></i>Guardar Jugador
+                            </button>
+                            <a href="{{ url_for('index') }}" class="btn btn-danger">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border-width: 2px;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #1e3a8a;
+        box-shadow: 0 0 0 0.25rem rgba(30, 58, 138, 0.25);
+    }
+    .text-primary {
+        color: #1e3a8a !important;
+    }
+    .border-primary {
+        border-color: #1e3a8a !important;
+    }
+    .btn-danger {
+        background: #dc3545;
+        border: none;
+        padding: 10px 25px;
+        transition: all 0.3s;
+    }
+    .btn-danger:hover {
+        background: #bb2d3b;
+        transform: translateY(-1px);
+    }
+    .btn-primary-custom {
+        background: #1e3a8a;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        transition: all 0.3s;
+    }
+    .btn-primary-custom:hover {
+        background: #172554;
+        color: white;
+        transform: translateY(-1px);
+    }
+    small.text-muted {
+        font-size: 0.8rem;
+        display: block;
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}

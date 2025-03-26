@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if es_admin %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ url_for('create_jugador') }}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i>Nuevo Jugador
+        </a>
+    </div>
+    {% else %}
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Dorsal</th>
+                    <th>Nombre(s)</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>Edad(años)</th>
+                    <th>Equipo</th>
+                    {% if es_admin %}
+                    <th class="text-center">Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for jugador in jugadores %}
+                <tr>
+                    <td>{{ jugador.Dorsal }}</td>
+                    <td>{{ jugador.Nombre }}</td>
+                    <td>{{ jugador.Ap_paterno }}</td>
+                    <td>{{ jugador.Ap_materno }}</td>
+                    <td>{{ jugador.Edad_en_años }}</td>
+                    <td>{{ jugador.Equipo }}</td>
+                    {% if es_admin %}
+                    <td class="text-center">
+                        <div class="btn-group" role="group">
+                            <a href="{{ url_for('update_jugador', Dorsal=jugador.Dorsal) }}" 
+                               class="btn btn-sm btn-warning me-1" 
+                               data-bs-toggle="tooltip" 
+                               title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{{ url_for('delete_jugador', Dorsal=jugador.Dorsal) }}" 
+                               class="btn btn-sm btn-danger" 
+                               onclick="return confirm('¿Seguro que deseas eliminar este jugador?')"
+                               data-bs-toggle="tooltip" 
+                               title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    /* Estilos generales */
+    .table {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(30, 58, 138, 0.1);
+    }
+    
+    .table th {
+        background-color: #1e3a8a;
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(30, 58, 138, 0.05);
+    }
+    
+    /* Estilos para botones */
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        padding: 8px 16px;
+        transition: all 0.3s;
+    }
+    
+    .btn-success:hover {
+        background-color: #218838;
+        transform: translateY(-1px);
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .btn-warning {
+        background-color: #ffc107;
+        color: #212529;
+        border: none;
+    }
+    
+    .btn-warning:hover {
+        background-color: #e0a800;
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+    
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+    
+    /* Mejoras visuales */
+    .table-responsive {
+        border-radius: 8px;
+    }
+    
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+    
+    /* Efectos hover */
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+
+<script>
+    // Inicializar tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}
