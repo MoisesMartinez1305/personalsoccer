@@ -2,15 +2,38 @@
 
 {% block content %}
 <div class="container mt-4">
-    {% if es_admin %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="{{ url_for('create_jugador') }}" class="btn btn-success">
-            <i class="fas fa-plus me-2"></i>Nuevo Jugador
-        </a>
-    </div>
-    {% else %}
-    {% endif %}
+    <!-- Mensajes flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
+    <!-- Encabezado y botones -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Lista de Jugadores</h2>
+        <div>
+            {% if es_admin %}
+                <a href="{{ url_for('create_jugador') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Nuevo Jugador
+                </a>
+            {% else %}
+                <span class="badge bg-info text-dark">Modo Invitado</span>
+            {% endif %}
+            {% if 'user_rol' in session %}
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-sign-out-alt me-1"></i>Salir
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tabla de jugadores -->
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead class="table-dark">
@@ -32,7 +55,7 @@
                     <td>{{ jugador.Dorsal }}</td>
                     <td>{{ jugador.Nombre }}</td>
                     <td>{{ jugador.Ap_paterno }}</td>
-                    <td>{{ jugador.Ap_materno }}</td>
+                    <td>{{ jugador.Ap_materno or '-' }}</td>
                     <td>{{ jugador.Edad_en_años }}</td>
                     <td>{{ jugador.Equipo }}</td>
                     {% if es_admin %}
@@ -119,6 +142,16 @@
         background-color: #c82333;
     }
     
+    .btn-outline-secondary {
+        border-color: #6c757d;
+        color: #6c757d;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+    }
+    
     /* Mejoras visuales */
     .table-responsive {
         border-radius: 8px;
@@ -136,6 +169,12 @@
     .btn:hover {
         transform: translateY(-1px);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Badge para invitado */
+    .badge {
+        padding: 0.5em 0.75em;
+        font-size: 0.9em;
     }
 </style>
 

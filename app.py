@@ -25,15 +25,11 @@ class Jugador(db.Model):
     Edad_en_años = db.Column(db.Integer, nullable=False)
     Equipo = db.Column(db.String(50), nullable=False)
 
-# Usuarios predefinidos EN MEMORIA (sin base de datos)
+# Usuarios predefinidos EN MEMORIA (solo admin ahora)
 USUARIOS = {
     "admin": {
         "password": generate_password_hash("admin123"),
         "rol": "admin"
-    },
-    "viewer": {
-        "password": generate_password_hash("viewer123"),
-        "rol": "viewer"
     }
 }
 
@@ -43,22 +39,30 @@ EQUIPOS_DISPONIBLES = [
     "Bayern Múnich", "Juventus", "PSG"
 ]
 
-# Decorador para verificar roles (usa la lista en memoria)
+# Decorador para verificar roles
 def requiere_rol(rol):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if 'username' not in session or USUARIOS.get(session['username'], {}).get('rol') != rol:
-                flash('Acceso denegado: No tienes permisos suficientes', 'danger')
-                return redirect(url_for('login'))
+            if rol == 'admin' and ('username' not in session or USUARIOS.get(session['username'], {}).get('rol') != rol):
+                flash('Acceso denegado: Se requieren credenciales de administrador', 'danger')
+                return redirect(url_for('admin_login'))
             return f(*args, **kwargs)
         return decorated_function
     return decorator
 
-# Rutas de autenticación (usa la lista en memoria)
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if 'username' in session:
+# Ruta para ingresar como invitado
+@app.route('/entrar_como_invitado')
+def entrar_como_invitado():
+    session.clear()
+    session['user_rol'] = 'invitado'
+    flash('Has entrado como invitado. Solo puedes ver la información.', 'info')
+    return redirect(url_for('index'))
+
+# Ruta de login solo para admin
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if 'username' in session and USUARIOS.get(session['username'], {}).get('rol') == 'admin':
         return redirect(url_for('index'))
 
     if request.method == 'POST':
@@ -70,24 +74,25 @@ def login():
         if user and check_password_hash(user['password'], password):
             session['username'] = username
             session['user_rol'] = user['rol']
-            flash('¡Bienvenido!', 'success')
+            flash('¡Bienvenido Administrador!', 'success')
             return redirect(url_for('index'))
         
-        flash('Usuario o contraseña incorrectos', 'danger')
+        flash('Credenciales incorrectas', 'danger')
     
-    return render_template('login.html')
+    return render_template('admin_login.html')
 
 @app.route('/logout')
 def logout():
     session.clear()
     flash('Has cerrado sesión correctamente', 'info')
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
-# Rutas principales
+# Ruta principal
 @app.route('/')
 def index():
-    if 'username' not in session:
-        return redirect(url_for('login'))
+    # Si no hay sesión activa, redirigir a la página de selección
+    if 'user_rol' not in session:
+        return render_template('seleccion_entrada.html')
     
     jugadores = Jugador.query.order_by(Jugador.Equipo, Jugador.Dorsal).all()
     return render_template('index.html', 
